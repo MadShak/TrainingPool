@@ -67,7 +67,7 @@ Este projeto está licenciado sob a licença MIT - consulte o arquivo [LICENSE](
 
 ### `requirements.txt`
 
+transformers==4.33.0
 torch==2.0.1
-transformers==4.31.0
-datasets==2.14.0
 PyPDF2==3.0.1
+datasets==2.14.0
