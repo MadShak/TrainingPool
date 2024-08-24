@@ -1,4 +1,5 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from huggingface_hub import login
 import os
 
 def gerar_texto(prompt, modelo_dir, tokenizer_dir=None, max_length=500, num_beams=10, temperature=0.7, top_p=0.9, top_k=50):
@@ -9,6 +10,11 @@ def gerar_texto(prompt, modelo_dir, tokenizer_dir=None, max_length=500, num_beam
     # Se o diretório do tokenizer não for fornecido, usa o tokenizer padrão Meta-Llama
     if tokenizer_dir is None:
         print("Carregando o tokenizer padrão Meta-Llama.")
+        
+        # Autenticação no Hugging Face (substitua "seu_token_de_autenticacao" pelo seu token real)
+        login("seu_token_de_autenticacao")
+
+        # Carrega o tokenizer padrão Meta-Llama
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3.1-8B-Instruct")
     else:
         print(f"Conteúdo do diretório do tokenizer {tokenizer_dir}: {os.listdir(tokenizer_dir)}")
