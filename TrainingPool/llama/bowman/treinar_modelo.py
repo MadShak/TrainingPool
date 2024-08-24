@@ -11,9 +11,9 @@ def carregar_dataset(caminho_arquivo, tokenizer):
     dataset = load_dataset('text', data_files={'train': caminho_arquivo}, split='train')
     
     def tokenize_function(examples):
-        return tokenizer(examples['text'], padding='max_length', truncation=True, max_length=512)
+        return tokenizer(examples['text'], truncation=True, max_length=512, padding='longest')
     
-    tokenized_dataset = dataset.map(tokenize_function, batched=True, num_proc=4)
+    tokenized_dataset = dataset.map(tokenize_function, batched=True, num_proc=os.cpu_count())  # Ajusta para usar todos os núcleos de CPU
     
     return tokenized_dataset
 
@@ -30,7 +30,7 @@ def treinar_modelo(dataset_path, output_dir):
     os.makedirs(local_model_dir, exist_ok=True)
     
     # Configurar autenticação com o token do Hugging Face
-    huggingface_token = "SEU_TOKEN_DE_ACESSO"  # Substitua pelo seu token de acesso
+    huggingface_token = "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"  # Substitua pelo seu token de acesso
     login(token=huggingface_token)
 
     # Carregar o tokenizer e o modelo com autenticação
@@ -53,17 +53,18 @@ def treinar_modelo(dataset_path, output_dir):
         output_dir=output_dir,
         overwrite_output_dir=True,
         num_train_epochs=3,
-        per_device_train_batch_size=2,  # Ajustado para lidar com o tamanho do modelo
-        gradient_accumulation_steps=8,  # Aumentado para compensar o batch menor
+        per_device_train_batch_size=8,  # Aumentado para utilizar mais da memória disponível
+        gradient_accumulation_steps=2,  # Reduzido para equilibrar com o aumento do batch size
         learning_rate=5e-5,
-        save_steps=10_000,
+        warmup_steps=500,  # Ajustado para menos warm-up
+        save_steps=5_000,  # Ajustado para salvar menos frequentemente
         save_total_limit=2,
         logging_dir='./logs',
         logging_steps=500,
         evaluation_strategy="steps",
         eval_steps=2_500,
         fp16=True,
-        dataloader_num_workers=4,
+        dataloader_num_workers=8,  # Ajustado para usar mais núcleos de CPU
         dataloader_pin_memory=True,
         max_grad_norm=1.0,
     )
